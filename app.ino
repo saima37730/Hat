@@ -21,6 +21,10 @@
  * - Web dashboard for monitoring and control
  * 
  * Created: Feb 2025
+
+    MOSI: GPIO 11
+    MISO: GPIO 13
+    SCK: GPIO 12
  */
 
 #include <Arduino.h>
@@ -136,7 +140,7 @@ void handleAddSlave(AsyncWebServerRequest *request);
 void handleSchedule(AsyncWebServerRequest *request);
 void handleGetStatus(AsyncWebServerRequest *request);
 void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status);
-void onDataReceived(const uint8_t *mac_addr, const uint8_t *data, int data_len);
+void onDataReceived(const esp_now_recv_info_t *recv_info, const uint8_t *data, int data_len);
 
 void setup() {
   Serial.begin(115200);
@@ -1012,8 +1016,10 @@ void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
   Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
 }
 
-// ESP-NOW callback when data is received
-void onDataReceived(const uint8_t *mac_addr, const uint8_t *data, int data_len) {
+void onDataReceived(const esp_now_recv_info_t *recv_info, const uint8_t *data, int data_len) {
+  // Get the sender's MAC address from recv_info
+  const uint8_t *mac_addr = recv_info->src_addr;
+  
   // Find which slave sent the data
   int slaveIndex = -1;
   for (int i = 0; i < slaveCount; i++) {
