@@ -48,10 +48,12 @@ using namespace ace_button;
 #define ROTARY_CLK 2   // Clock pin for rotary encoder
 #define ROTARY_DT 3    // Data pin for rotary encoder
 #define ROTARY_SW 4    // Switch pin for rotary encoder
-#define RELAY1 12      // Relay 1 control pin
-#define RELAY2 13      // Relay 2 control pin
-#define RELAY3 14      // Relay 3 control pin
-#define RELAY4 15      // Relay 4 control pin
+#define RELAY1 15      // Relay 1 control pin
+#define RELAY2 16      // Relay 2 control pin
+#define RELAY3 17      // Relay 3 control pin
+#define RELAY4 18      // Relay 4 control pin
+#define RTC_SDA 8
+#define RTC_SCL 9
 
 // WiFi Credentials for Access Point
 const char* ssid = "HomeAutomation";
@@ -112,6 +114,9 @@ typedef struct {
 #define MAX_SCHEDULES 20
 ScheduleItem schedules[MAX_SCHEDULES];
 int scheduleCount = 0;
+
+//sd card setting
+bool sdCardAvailable = false;
 
 // Function declarations
 void setupRTC();
@@ -406,6 +411,7 @@ void sendCommandToSlave(int slaveIndex, int relayIndex, bool state) {
 
 // Log relay state change with timestamp
 void logRelayChange(int roomIndex, int relayIndex, bool state) {
+  if (!sdCardAvailable) return;  // Skip if no SD card
   if (!SD.begin(SD_CS)) {
     Serial.println("SD Card failed to mount");
     return;
