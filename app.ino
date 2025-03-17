@@ -200,6 +200,7 @@ void loop() {
 
 // Setup RTC module
 void setupRTC() {
+  Wire.begin(RTC_SDA, RTC_SCL);  // Initialize I2C with custom pin
   if (!rtc.begin()) {
     Serial.println("Couldn't find RTC");
   } else {
@@ -480,6 +481,7 @@ void logRelayChange(int roomIndex, int relayIndex, bool state) {
 
 // Save current relay states to SD card
 void saveRelayStates() {
+  if (!sdCardAvailable) return;  // Skip if no SD card
   if (!SD.begin(SD_CS)) {
     Serial.println("SD Card failed to mount");
     return;
@@ -521,6 +523,7 @@ void saveRelayStates() {
 
 // Load relay states from SD card
 void loadRelayStates() {
+  if (!sdCardAvailable) return;  // Skip if no SD card
   if (!SD.begin(SD_CS)) {
     Serial.println("SD Card failed to mount");
     return;
@@ -563,6 +566,7 @@ void loadRelayStates() {
 
 // Save slave information to SD card
 void saveSlaveInfo() {
+  if (!sdCardAvailable) return;  // Skip if no SD card
   if (!SD.begin(SD_CS)) {
     Serial.println("SD Card failed to mount");
     return;
@@ -590,6 +594,7 @@ void saveSlaveInfo() {
 
 // Load slave information from SD card
 void loadSlaveInfo() {
+  if (!sdCardAvailable) return;  // Skip if no SD card
   if (!SD.begin(SD_CS)) {
     Serial.println("SD Card failed to mount");
     return;
